@@ -16,10 +16,13 @@ Prerequisites:
 - A working local `codex` CLI
 - A Discord server where you can create a bot and use threads
 
-1. Install the package:
+1. Clone the repository and install dependencies:
 
    ```sh
-   npm install -g codex-discord-multisession
+   git clone git@github.com:ccuuu/codex-discord-multisession.git
+   cd codex-discord-multisession
+   npm install
+   npm run build
    ```
 
 2. Create a Discord bot, enable `Message Content Intent`, invite it to your
@@ -34,7 +37,7 @@ Prerequisites:
    export DISCORD_BOT_TOKEN='<bot token>'
    export CODEX_DISCORD_PARENT_CHANNEL_ID='<parent channel id>'
    export CODEX_DISCORD_WORKDIR="$HOME/some/project"
-   codex-discord start
+   node bin/codex-discord.js start
    ```
 
 4. In that Discord parent channel, send:
@@ -74,8 +77,8 @@ If you already have a local `wx` command from `wx-ilink-cli`, you can bridge
 the same Codex workflow into personal WeChat:
 
 ```sh
-codex-wechat doctor
-codex-wechat start
+node bin/codex-wechat.js doctor
+node bin/codex-wechat.js start
 ```
 
 Then send:
@@ -291,35 +294,30 @@ matters when a local TUI was started by a wrapper that writes sessions outside
 
 ## Setup
 
-Install from npm once published:
+Primary path for this repository is local checkout:
 
 ```sh
-npm install -g codex-discord-multisession
+git clone git@github.com:ccuuu/codex-discord-multisession.git
+cd codex-discord-multisession
+npm install
+npm run build
+node bin/codex-discord.js help
+node bin/codex-wechat.js help
 ```
 
-This package is not available from the public npm registry until it is
-published. During local development, link the checkout instead:
+If you want global commands on your own machine, link the checkout:
 
 ```sh
-cd /path/to/codex-discord-multisession
-npm install
 npm run link:cli
 codex-discord help
 codex-wechat help
 ```
 
-You can also run without global install:
+An npm package also exists, but it is optional and not the recommended entry
+point for early adopters:
 
 ```sh
-node bin/codex-discord.js help
-```
-
-For local development from this checkout:
-
-```sh
-npm install
-npm run build
-node bin/codex-discord.js help
+npm install -g codex-discord-multisession
 ```
 
 Create a Discord Application and Bot, enable Message Content Intent, and
@@ -334,7 +332,7 @@ invite the bot with at least:
 Start the bridge:
 
 ```sh
-codex-discord start
+node bin/codex-discord.js start
 ```
 
 On a TTY, `start` opens an interactive prompt for all startup values. Existing
