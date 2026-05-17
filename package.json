@@ -1,0 +1,66 @@
+{
+  "name": "codex-discord-multisession",
+  "version": "0.1.0",
+  "description": "Discord and local WeChat bridges for running persistent Codex CLI sessions from chat.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Lufan You",
+  "homepage": "https://github.com/lfyou/codex-discord-multisession#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lfyou/codex-discord-multisession.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lfyou/codex-discord-multisession/issues"
+  },
+  "keywords": [
+    "codex",
+    "discord",
+    "wechat",
+    "agent",
+    "cli",
+    "multisession",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "codex-discord": "./bin/codex-discord.js",
+    "codex-discord-mcp": "./bin/codex-discord-mcp.js",
+    "codex-wechat": "./bin/codex-wechat.js"
+  },
+  "files": [
+    ".env.example",
+    "bin",
+    "dist",
+    "LICENSE",
+    "README.md",
+    "docs",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepack": "npm run build",
+    "check": "npm run typecheck && npm run build",
+    "link:cli": "npm run build && npm link",
+    "start": "tsx src/start.ts",
+    "start:proxy": "CODEX_DISCORD_PROXY=${CODEX_DISCORD_PROXY:-http://127.0.0.1:7897} tsx src/start.ts",
+    "start:wechat": "tsx src/wechat-start.ts",
+    "smoke": "tsx src/smoke.ts",
+    "smoke:wechat": "tsx src/wechat-smoke.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "https-proxy-agent": "^7.0.6",
+    "undici": "^6.25.0",
+    "ws": "^8.20.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
