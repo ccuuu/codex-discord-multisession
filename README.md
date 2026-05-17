@@ -6,6 +6,84 @@ Codex `thread_id`, and follow-up Discord messages resume that Codex session.
 The same package also includes a local-only `codex-wechat` bridge for the
 previously built `wx` personal WeChat CLI.
 
+## Quick Start
+
+### Discord
+
+Prerequisites:
+
+- Node.js 20+
+- A working local `codex` CLI
+- A Discord server where you can create a bot and use threads
+
+1. Install the package:
+
+   ```sh
+   npm install -g codex-discord-multisession
+   ```
+
+2. Create a Discord bot, enable `Message Content Intent`, invite it to your
+   server, and copy:
+
+   - the bot token
+   - the parent channel ID where new Codex threads should be created
+
+3. Start the bridge:
+
+   ```sh
+   export DISCORD_BOT_TOKEN='<bot token>'
+   export CODEX_DISCORD_PARENT_CHANNEL_ID='<parent channel id>'
+   export CODEX_DISCORD_WORKDIR="$HOME/some/project"
+   codex-discord start
+   ```
+
+4. In that Discord parent channel, send:
+
+   ```text
+   !codex Summarize this repository and tell me the next step.
+   ```
+
+5. The bot creates a thread and binds it to one persistent Codex session.
+
+6. Continue in the thread with normal messages, or use:
+
+   ```text
+   !status
+   !queue <message>
+   !stop
+   ```
+
+### Resume an Existing Local Codex Session
+
+If you already started Codex in a terminal and want Discord to continue the
+same conversation:
+
+```text
+!codex-resume --last my-local-session
+```
+
+Or, inside an existing Discord thread:
+
+```text
+!resume --last
+```
+
+### Optional WeChat Add-On
+
+If you already have a local `wx` command from `wx-ilink-cli`, you can bridge
+the same Codex workflow into personal WeChat:
+
+```sh
+codex-wechat doctor
+codex-wechat start
+```
+
+Then send:
+
+```text
+!codex summarize this repository
+```
+
 ## What is verified
 
 Codex CLI `0.130.0` supports the minimum session workflow needed by this
