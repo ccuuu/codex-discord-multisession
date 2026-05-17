@@ -1,17 +1,17 @@
 {
   "name": "codex-discord-multisession",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Discord and local WeChat bridges for running persistent Codex CLI sessions from chat.",
   "type": "module",
   "license": "MIT",
   "author": "Lufan You",
-  "homepage": "https://github.com/lfyou/codex-discord-multisession#readme",
+  "homepage": "https://github.com/ccuuu/codex-discord-multisession#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lfyou/codex-discord-multisession.git"
+    "url": "git+https://github.com/ccuuu/codex-discord-multisession.git"
   },
   "bugs": {
-    "url": "https://github.com/lfyou/codex-discord-multisession/issues"
+    "url": "https://github.com/ccuuu/codex-discord-multisession/issues"
   },
   "keywords": [
     "codex",
@@ -26,9 +26,9 @@
     "node": ">=20"
   },
   "bin": {
-    "codex-discord": "./bin/codex-discord.js",
-    "codex-discord-mcp": "./bin/codex-discord-mcp.js",
-    "codex-wechat": "./bin/codex-wechat.js"
+    "codex-discord": "bin/codex-discord.js",
+    "codex-discord-mcp": "bin/codex-discord-mcp.js",
+    "codex-wechat": "bin/codex-wechat.js"
   },
   "files": [
     ".env.example",
