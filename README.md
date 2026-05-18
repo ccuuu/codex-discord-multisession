@@ -6,6 +6,9 @@ Codex `thread_id`, and follow-up Discord messages resume that Codex session.
 The same package also includes a local-only `codex-wechat` bridge for the
 previously built `wx` personal WeChat CLI.
 
+Promotion copy and suggested repository metadata live in
+[docs/promo-copy.md](./docs/promo-copy.md).
+
 ## Quick Start
 
 ### Discord

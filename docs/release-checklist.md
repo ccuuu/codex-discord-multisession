@@ -7,6 +7,8 @@
 3. Verify the GitHub Actions `CI` workflow passes.
 4. Add a short repository description and topics:
    `codex`, `discord`, `wechat`, `mcp`, `agent`, `cli`.
+   Recommended description:
+   `Discord and local WeChat bridges for persistent Codex CLI sessions, thread-based chat, session resume, and AskUserQuestion-style MCP interaction.`
 
 ## npm
 
