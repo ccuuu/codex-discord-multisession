@@ -76,8 +76,20 @@ Or, inside an existing Discord thread:
 
 ### Optional WeChat Add-On
 
-If you already have a local `wx` command from `wx-ilink-cli`, you can bridge
-the same Codex workflow into personal WeChat:
+`codex-wechat` depends on a local `wx` command from `wx-ilink-cli`. The most
+practical setup is to clone `wx-ilink-cli` and run `npm run link:wx` first:
+
+```sh
+git clone git@github.com:ccuuu/wx-ilink-cli.git
+cd wx-ilink-cli
+nvm use
+npm install
+npm run build
+npm run link:wx
+wx --help
+```
+
+Then you can bridge the same Codex workflow into personal WeChat:
 
 ```sh
 node bin/codex-wechat.js doctor
@@ -446,36 +458,25 @@ The transport is simple:
 Recommended promotion flow:
 
 ```sh
-npm install -g codex-discord-multisession
-codex-wechat doctor
-codex-wechat start
-```
-
-Until the package is published to npm, use the local checkout:
-
-```sh
-cd /path/to/codex-discord-multisession
+git clone git@github.com:ccuuu/codex-discord-multisession.git
+cd codex-discord-multisession
 npm install
+npm run build
 npm run link:cli
 codex-wechat doctor
 codex-wechat start
 ```
 
-Before this flow, install the local `wx` command from `wx-ilink-cli`:
+Before this flow, install the local `wx` command from `wx-ilink-cli` and make
+sure `npm run link:wx` has exposed `wx` in your PATH:
 
 ```sh
-cd /path/to/wx-ilink-cli
+git clone git@github.com:ccuuu/wx-ilink-cli.git
+cd wx-ilink-cli
 nvm use
 npm install
+npm run build
 npm run link:wx
-wx --help
-```
-
-If `wx-ilink-cli` is distributed as a package or Git repository, the user can
-install it globally instead:
-
-```sh
-npm install -g <wx-ilink-cli-package-or-git-url>
 wx --help
 ```
 
