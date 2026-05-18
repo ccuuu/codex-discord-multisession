@@ -1,5 +1,9 @@
 # Codex Discord Multisession
 
+[![CI](https://github.com/ccuuu/codex-discord-multisession/actions/workflows/ci.yml/badge.svg)](https://github.com/ccuuu/codex-discord-multisession/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/codex-discord-multisession)](https://www.npmjs.com/package/codex-discord-multisession)
+[![License](https://img.shields.io/github/license/ccuuu/codex-discord-multisession)](./LICENSE)
+
 Experimental Discord bridge for Codex CLI. It is the Codex-shaped equivalent
 of `claude-discord-multisession`: each Discord thread maps to one persistent
 Codex `thread_id`, and follow-up Discord messages resume that Codex session.
