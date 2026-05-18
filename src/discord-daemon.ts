@@ -123,6 +123,18 @@ type BoundSession = ResolvedBindTarget & {
   binding: Binding
 }
 
+class DiscordRestError extends Error {
+  statusCode?: number
+  retryAfterMs?: number
+
+  constructor(message: string, options: { statusCode?: number; retryAfterMs?: number } = {}) {
+    super(message)
+    this.name = 'DiscordRestError'
+    this.statusCode = options.statusCode
+    this.retryAfterMs = options.retryAfterMs
+  }
+}
+
 export async function startDiscordDaemon(opts: DiscordDaemonOptions): Promise<void> {
   const bindingsFile = join(opts.stateDir, 'bindings.json')
   const askSocket = join(opts.stateDir, 'ask.sock')
@@ -140,21 +152,84 @@ export async function startDiscordDaemon(opts: DiscordDaemonOptions): Promise<vo
     managedThreads.add(threadId)
   }
 
-  async function discordRequest(method: UndiciDispatcher.HttpMethod, path: string, body?: RestJson): Promise<any> {
-    const res = await request(`https://discord.com/api/v10${path}`, {
-      method,
-      dispatcher: restDispatcher,
-      headers: {
-        authorization: `Bot ${opts.token}`,
-        'content-type': 'application/json',
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    })
-    const text = await res.body.text()
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw new Error(`Discord REST ${method} ${path} failed: ${res.statusCode} ${text.slice(0, 500)}`)
+  function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  function retryAfterMs(value: string | null): number | undefined {
+    if (!value) return undefined
+    const numeric = Number(value)
+    if (!Number.isFinite(numeric) || numeric < 0) return undefined
+    return Math.ceil(numeric * 1000)
+  }
+
+  function firstHeader(value: string | string[] | null | undefined): string | null {
+    if (Array.isArray(value)) return value[0] ?? null
+    return value ?? null
+  }
+
+  function isRetryableDiscordError(err: unknown): boolean {
+    if (!(err instanceof Error)) return false
+    if (err instanceof DiscordRestError) {
+      if (err.statusCode === 429) return true
+      if (err.statusCode !== undefined && err.statusCode >= 500) return true
+      return false
     }
-    return text ? JSON.parse(text) : null
+    const text = err.message.toLowerCase()
+    return [
+      'before secure tls connection was established',
+      'connect timeout',
+      'econnreset',
+      'socket hang up',
+      'fetch failed',
+      'other side closed',
+      'terminated',
+      'connect econnrefused',
+      'connect etimedout',
+      'body timeout',
+      'headers timeout',
+    ].some(fragment => text.includes(fragment))
+  }
+
+  function backoffMs(attempt: number, retryAfter?: number): number {
+    if (retryAfter && retryAfter > 0) return Math.min(retryAfter, 15000)
+    return Math.min(15000, 800 * attempt)
+  }
+
+  async function discordRequest(method: UndiciDispatcher.HttpMethod, path: string, body?: RestJson): Promise<any> {
+    const payload = body ? JSON.stringify(body) : undefined
+    const maxAttempts = 3
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        const res = await request(`https://discord.com/api/v10${path}`, {
+          method,
+          dispatcher: restDispatcher,
+          headers: {
+            authorization: `Bot ${opts.token}`,
+            'content-type': 'application/json',
+          },
+          body: payload,
+        })
+        const text = await res.body.text()
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          throw new DiscordRestError(
+            `Discord REST ${method} ${path} failed: ${res.statusCode} ${text.slice(0, 500)}`,
+            {
+              statusCode: res.statusCode,
+              retryAfterMs: retryAfterMs(firstHeader(res.headers['retry-after'])),
+            },
+          )
+        }
+        return text ? JSON.parse(text) : null
+      } catch (err) {
+        if (attempt >= maxAttempts || !isRetryableDiscordError(err)) throw err
+        const retryMs = backoffMs(attempt, err instanceof DiscordRestError ? err.retryAfterMs : undefined)
+        console.error(`discord request retry ${attempt}/${maxAttempts - 1}: ${method} ${path} after ${retryMs}ms (${err instanceof Error ? err.message : String(err)})`)
+        await sleep(retryMs)
+      }
+    }
+    throw new Error(`Discord REST ${method} ${path} exhausted retries`)
   }
 
   async function sendMessage(channelId: string, content: string, options: { components?: unknown[] } = {}): Promise<string> {
